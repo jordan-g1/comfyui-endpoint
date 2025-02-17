@@ -1,14 +1,20 @@
 FROM runpod/stable-diffusion:comfy-ui-latest
 
-# Copy workflow and handler
-COPY workflow.json /comfyui/workflow.json
-COPY handler.py /comfyui/handler.py
+WORKDIR /
 
-# Set working directory
-WORKDIR /comfyui
+# Install additional requirements
+RUN pip install runpod requests Pillow
 
-# Make sure the script is executable
+# Copy our files
+COPY workflow.json /workspace/workflow.json
+COPY handler.py /workspace/handler.py
+
+# Make handler executable and set workdir
+WORKDIR /workspace
 RUN chmod +x handler.py
 
-# Start ComfyUI with our handler
+# Add some debug logging
+RUN echo "Files in workspace:" && ls -la /workspace
+
+# Start handler
 CMD ["python", "handler.py"]
